@@ -15,8 +15,8 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #0a0a0a;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            background: #0f0f0f;
             color: #ffffff;
             overflow-x: hidden;
             line-height: 1.6;
@@ -111,6 +111,16 @@
         .nav-links a.active {
             color: #00ff88;
             background: rgba(0, 255, 136, 0.1);
+        }
+
+        /* Mobile menu button */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: #00ff88;
+            font-size: 1.5rem;
+            cursor: pointer;
         }
 
         /* Enhanced Hero Section */
@@ -349,6 +359,9 @@
             position: relative;
             overflow: hidden;
             backdrop-filter: blur(10px);
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(30px);
         }
 
         .card::before {
@@ -372,6 +385,25 @@
             background: rgba(255, 255, 255, 0.08);
             border-color: rgba(0, 255, 136, 0.5);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Card Images */
+        .card-image-container {
+            height: 250px;
+            overflow: hidden;
+            margin: -3rem -3rem 2rem -3rem;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .card-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card:hover .card-image-container img {
+            transform: scale(1.05);
         }
 
         .card-header {
@@ -485,7 +517,12 @@
             overflow: hidden;
         }
 
-        .submit-btn::before {
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .submit-btn:not(:disabled)::before {
             content: '';
             position: absolute;
             top: 0;
@@ -496,11 +533,11 @@
             transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .submit-btn:hover::before {
+        .submit-btn:not(:disabled):hover::before {
             left: 100%;
         }
 
-        .submit-btn:hover {
+        .submit-btn:not(:disabled):hover {
             transform: translateY(-3px);
             box-shadow: 0 15px 40px rgba(0, 255, 136, 0.4);
         }
@@ -518,6 +555,7 @@
             transform: translateX(400px);
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 300px;
         }
 
         .status-message.success {
@@ -575,40 +613,16 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            .nav-container {
-                padding: 1rem 2rem;
-            }
-            
-            .nav-links {
-                display: none;
-            }
-            
-            .section {
-                padding: 4rem 2rem;
-            }
-            
-            .grid-2, .grid-3, .grid-4 {
-                grid-template-columns: 1fr;
-            }
-            
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .cta-group {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .card {
-                padding: 2rem;
-            }
-
-            .card:hover {
-                transform: translateY(-5px);
-            }
+        /* Button loading state */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
         }
 
         /* Dropdown Styling */
@@ -645,10 +659,73 @@
             background: rgba(0, 255, 136, 0.1);
             transform: translateX(5px);
         }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 1rem 2rem;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: rgba(10, 10, 10, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                transform: translateY(-100vh);
+                transition: transform 0.3s ease;
+                border-top: 1px solid rgba(0, 255, 136, 0.2);
+            }
+
+            .nav-links.active {
+                transform: translateY(0);
+            }
+            
+            .section {
+                padding: 4rem 2rem;
+            }
+            
+            .grid-2, .grid-3, .grid-4 {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cta-group {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .card {
+                padding: 2rem;
+            }
+
+            .card:hover {
+                transform: translateY(-5px);
+            }
+
+            .status-message {
+                right: 1rem;
+                max-width: calc(100vw - 2rem);
+            }
+        }
+
+        @media (max-width: 500px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Page Loader -->
     <div class="page-loader" id="pageLoader">
         <div class="loader-content">
             <div class="loader-spinner"></div>
@@ -656,11 +733,13 @@
         </div>
     </div>
 
-    <!-- Navigation -->
     <nav>
         <div class="nav-container">
             <div class="logo">EtHOS</div>
-            <ul class="nav-links">
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links" id="navLinks">
                 <li class="nav-item">
                     <a href="#home" class="nav-link active">Home</a>
                 </li>
@@ -699,9 +778,7 @@
         </div>
     </nav>
 
-    <!-- Main Content Area -->
     <div class="content-area">
-        <!-- Enhanced Home Section -->
         <section id="home" class="page-section active">
             <div class="hero">
                 <div class="electronics-canvas" id="electronicsCanvas"></div>
@@ -721,7 +798,6 @@
             </div>
         </section>
 
-        <!-- Projects Section -->
         <section id="projects" class="page-section">
             <div class="section">
                 <div class="section-header">
@@ -729,75 +805,113 @@
                     <p class="section-subtitle">Cutting-edge innovations that shape the future of electronics and hardware engineering</p>
                 </div>
                 <div class="grid grid-2">
-                    <div class="card" onclick="showProjectDetails('iot-home')">
+                    
+                    <div class="card" onclick="showProjectDetails('digital-clock')">
+                        <div class="card-image-container">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='250' viewBox='0 0 400 250'%3E%3Crect width='400' height='250' fill='%23333'/%3E%3Ctext x='200' y='125' font-family='Arial' font-size='20' text-anchor='middle' fill='%2300ff88'%3EDigital Clock Project%3C/text%3E%3C/svg%3E" alt="Digital Clock Project with Arduino and LCD screen">
+                        </div>
                         <div class="card-header">
                             <div class="card-icon">
-                                <i class="fas fa-home"></i>
+                                <i class="fas fa-clock"></i>
                             </div>
-                            <h3 class="card-title">IoT Smart Home System</h3>
+                            <h3 class="card-title">Digital Clock</h3>
                         </div>
                         <p class="card-description">
-                            Advanced home automation system with voice control, sensor integration, and mobile app connectivity. Features real-time monitoring, predictive algorithms, and seamless device integration.
+                            An Arduino-powered clock using a 16x2 LCD and DHT22 
+                            sensor to display real-time date, time, temperature, and humidity. 
+                            An RTC module ensures time is kept accurately even when powered off.
                         </p>
                         <div class="card-meta">
-                            <span><i class="fas fa-users"></i> 5 Members</span>
-                            <span><i class="fas fa-calendar"></i> 6 Months</span>
-                            <span><i class="fas fa-microchip"></i> ESP32</span>
+                            <span><i class="fas fa-microchip"></i> Arduino Uno</span>
+                            <span><i class="fas fa-thermometer-half"></i> DHT22 Sensor</span>
+                            <span><i class="fas fa-calendar-alt"></i> RTC Module</span>
                         </div>
                     </div>
-                    <div class="card" onclick="showProjectDetails('robotics-arm')">
+                    
+                    <div class="card">
+                        <div class="card-image-container">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='250' viewBox='0 0 400 250'%3E%3Crect width='400' height='250' fill='%23333'/%3E%3Ctext x='200' y='125' font-family='Arial' font-size='20' text-anchor='middle' fill='%2300ff88'%3ERC Car Project%3C/text%3E%3C/svg%3E" alt="RC Car Project">
+                        </div>
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-car"></i>
+                            </div>
+                            <h3 class="card-title">RC Car</h3>
+                        </div>
+                        <p class="card-description">
+                            An ESP32 RC car is a small robotic vehicle controlled wirelessly using the ESP32 microcontroller. The ESP32 acts as the "brain" of the car, handling motor control, wireless communication (via Wi-Fi or Bluetooth), and sensor integration.
+                        </p>
+                        <div class="card-meta">
+                            <span><i class="fas fa-microchip"></i> ESP32</span>
+                            <span><i class="fas fa-wifi"></i> Wireless Control</span>
+                            <span><i class="fas fa-cogs"></i> Motor Control</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-image-container">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='250' viewBox='0 0 400 250'%3E%3Crect width='400' height='250' fill='%23333'/%3E%3Ctext x='200' y='125' font-family='Arial' font-size='20' text-anchor='middle' fill='%2300ff88'%3EProximity Sensor%3C/text%3E%3C/svg%3E" alt="Proximity Sensor Project">
+                        </div>
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-wave-square"></i>
+                            </div>
+                            <h3 class="card-title">Proximity Sensor</h3>
+                        </div>
+                        <p class="card-description">
+                            The system works on the principle of ultrasonic sound wave reflection (echo principle). An ultrasonic sensor like HC-SR04 sends out high-frequency sound pulses (40 kHz) through its transmitter. When these pulses hit an obstacle, they reflect back and are received by the receiver of the sensor.
+                        </p>
+                        <div class="card-meta">
+                            <span><i class="fas fa-wave-square"></i> HC-SR04</span>
+                            <span><i class="fas fa-signal"></i> Ultrasonic</span>
+                            <span><i class="fas fa-eye"></i> Detection</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-image-container">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='250' viewBox='0 0 400 250'%3E%3Crect width='400' height='250' fill='%23333'/%3E%3Ctext x='200' y='125' font-family='Arial' font-size='20' text-anchor='middle' fill='%2300ff88'%3EObstacle Avoider%3C/text%3E%3C/svg%3E" alt="Obstacle Avoider Project">
+                        </div>
                         <div class="card-header">
                             <div class="card-icon">
                                 <i class="fas fa-robot"></i>
                             </div>
-                            <h3 class="card-title">6-DOF Robotic Arm</h3>
+                            <h3 class="card-title">Obstacle Avoider</h3>
                         </div>
                         <p class="card-description">
-                            Precision robotic arm with computer vision capabilities for industrial applications. Features force feedback, path planning, and object recognition systems.
+                            The obstacle-avoiding robot is an autonomous mobile system built using an Arduino Uno as the controller. It uses a servo-mounted ultrasonic sensor (HC-SR04) to continuously scan the path ahead. When an obstacle is detected within a certain range, the Arduino processes the distance data and decides the best direction to move.
                         </p>
                         <div class="card-meta">
-                            <span><i class="fas fa-users"></i> 4 Members</span>
-                            <span><i class="fas fa-calendar"></i> 4 Months</span>
-                            <span><i class="fas fa-eye"></i> Computer Vision</span>
+                            <span><i class="fas fa-microchip"></i> Arduino Uno</span>
+                            <span><i class="fas fa-robot"></i> Autonomous</span>
+                            <span><i class="fas fa-cogs"></i> Servo Motor</span>
                         </div>
                     </div>
-                    <div class="card" onclick="showProjectDetails('drone-system')">
+
+                    <div class="card">
+                        <div class="card-image-container">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='250' viewBox='0 0 400 250'%3E%3Crect width='400' height='250' fill='%23333'/%3E%3Ctext x='200' y='125' font-family='Arial' font-size='20' text-anchor='middle' fill='%2300ff88'%3ELine Following Robot%3C/text%3E%3C/svg%3E" alt="Line Following Robot Project">
+                        </div>
                         <div class="card-header">
                             <div class="card-icon">
-                                <i class="fas fa-helicopter"></i>
+                                <i class="fas fa-route"></i>
                             </div>
-                            <h3 class="card-title">Autonomous Drone System</h3>
+                            <h3 class="card-title">Line Following Robot</h3>
                         </div>
                         <p class="card-description">
-                            GPS-guided quadcopter with obstacle avoidance and real-time video transmission. Features waypoint navigation and emergency protocols.
+                            A Line Follower Robot (LFR) is an autonomous robot that follows a black line on a white surface using IR sensors. The Arduino Uno acts as the brain of the system, continuously reading signals from the IR sensors and controlling the motor driver to adjust the robot's movement.
                         </p>
                         <div class="card-meta">
-                            <span><i class="fas fa-users"></i> 6 Members</span>
-                            <span><i class="fas fa-calendar"></i> 8 Months</span>
-                            <span><i class="fas fa-satellite"></i> GPS Navigation</span>
+                            <span><i class="fas fa-microchip"></i> Arduino Uno</span>
+                            <span><i class="fas fa-eye"></i> IR Sensors</span>
+                            <span><i class="fas fa-route"></i> Line Following</span>
                         </div>
                     </div>
-                    <div class="card" onclick="showProjectDetails('solar-tracker')">
-                        <div class="card-header">
-                            <div class="card-icon">
-                                <i class="fas fa-solar-panel"></i>
-                            </div>
-                            <h3 class="card-title">Solar Panel Tracker</h3>
-                        </div>
-                        <p class="card-description">
-                            Dual-axis solar tracking system that maximizes energy efficiency throughout the day. Features weather protection and energy analytics.
-                        </p>
-                        <div class="card-meta">
-                            <span><i class="fas fa-users"></i> 3 Members</span>
-                            <span><i class="fas fa-calendar"></i> 3 Months</span>
-                            <span><i class="fas fa-leaf"></i> Green Energy</span>
-                        </div>
-                    </div>
+
                 </div>
             </div>
         </section>
 
-        <!-- Events Section -->
         <section id="events" class="page-section">
             <div class="section">
                 <div class="section-header">
@@ -806,55 +920,27 @@
                 </div>
                 <div class="grid grid-3">
                     <div class="card">
+                        <div class="card-image-container">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='250' viewBox='0 0 400 250'%3E%3Crect width='400' height='250' fill='%23333'/%3E%3Ctext x='200' y='125' font-family='Arial' font-size='16' text-anchor='middle' fill='%2300ff88'%3EOrientation Workshop%3C/text%3E%3C/svg%3E" alt="EtHOS Orientation Workshop">
+                        </div>
                         <div class="card-header">
                             <div class="card-icon">
                                 <i class="fas fa-calendar"></i>
                             </div>
-                            <h3 class="card-title">Arduino Workshop</h3>
+                            <h3 class="card-title">Orientation Workshop</h3>
                         </div>
                         <p class="card-description">
-                            Comprehensive Arduino workshop covering basics to advanced projects. Perfect for beginners and intermediate learners.
+                            On 24th September, at Govind Ballabh Pant Institute of Engineering & Technology Pauri, under the EtHOS-Electronics Hardware Oriented Society, we successfully conducted an informative workshop for first-year students. The session presented a comprehensive overview of the Electronics and Communication branch along with an exhibition of engaging projects.
                         </p>
                         <div class="card-meta">
-                            <span><i class="fas fa-clock"></i> Oct 15, 2025</span>
-                            <span><i class="fas fa-users"></i> 50 Seats</span>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-icon">
-                                <i class="fas fa-microchip"></i>
-                            </div>
-                            <h3 class="card-title">PCB Design Masterclass</h3>
-                        </div>
-                        <p class="card-description">
-                            Advanced PCB design techniques using industry-standard tools. From schematic to manufacturing processes.
-                        </p>
-                        <div class="card-meta">
-                            <span><i class="fas fa-clock"></i> Nov 2, 2025</span>
-                            <span><i class="fas fa-users"></i> 30 Seats</span>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-icon">
-                                <i class="fas fa-trophy"></i>
-                            </div>
-                            <h3 class="card-title">Tech Symposium 2025</h3>
-                        </div>
-                        <p class="card-description">
-                            Annual technical symposium with guest speakers, project exhibitions, and networking opportunities.
-                        </p>
-                        <div class="card-meta">
-                            <span><i class="fas fa-clock"></i> Dec 10, 2025</span>
-                            <span><i class="fas fa-users"></i> 200+ Attendees</span>
+                            <span><i class="fas fa-clock"></i> Sep 24, 2025</span>
+                            <span><i class="fas fa-users"></i> 60 Attendees</span>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Members Section -->
         <section id="members" class="page-section">
             <div class="section">
                 <div class="section-header">
@@ -862,119 +948,161 @@
                     <p class="section-subtitle">Meet the passionate individuals driving innovation in electronics and hardware</p>
                 </div>
                 <div class="grid grid-3">
-                    <div class="card" onclick="showMemberDetails('alex-chen')">
+                    <div class="card" onclick="showMemberDetails('jai-kumar')">
                         <div class="card-header">
                             <div class="card-icon" style="background: linear-gradient(135deg, #ff6b6b, #ff8e8e); color: white; font-size: 1.2rem; font-weight: bold;">
-                                AC
+                                JK
                             </div>
                             <div>
-                                <h3 class="card-title">Alex Chen</h3>
-                                <p style="color: #00ff88; font-size: 0.9rem;">President & Hardware Lead</p>
+                                <h3 class="card-title">Jai Kumar</h3>
+                                <p style="color: #00ff88; font-size: 0.9rem;">Final Year</p>
                             </div>
                         </div>
                         <p class="card-description">
-                            Senior Electronics Engineering student specializing in embedded systems and IoT development. Leads technical initiatives and mentors junior members.
+                            Mentor with expertise in embedded systems and project guidance.
                         </p>
                         <div class="card-meta">
                             <span><i class="fas fa-microchip"></i> Embedded Systems</span>
                             <span><i class="fas fa-award"></i> 4 Years Experience</span>
                         </div>
                     </div>
-                    <div class="card" onclick="showMemberDetails('sarah-johnson')">
+                    
+                    <div class="card" onclick="showMemberDetails('abishek-pokhriyal')">
                         <div class="card-header">
                             <div class="card-icon" style="background: linear-gradient(135deg, #4ecdc4, #44a08d); color: white; font-size: 1.2rem; font-weight: bold;">
-                                SJ
+                                AP
                             </div>
                             <div>
-                                <h3 class="card-title">Sarah Johnson</h3>
-                                <p style="color: #00ff88; font-size: 0.9rem;">VP & Software Lead</p>
+                                <h3 class="card-title">Abishek Pokhriyal</h3>
+                                <p style="color: #00ff88; font-size: 0.9rem;">Third Year</p>
                             </div>
                         </div>
                         <p class="card-description">
-                            Computer Science and Robotics expert specializing in robotics programming and computer vision applications.
+                            Project Lead specializing in robotics and automation systems.
                         </p>
                         <div class="card-meta">
                             <span><i class="fas fa-robot"></i> Robotics</span>
                             <span><i class="fas fa-eye"></i> Computer Vision</span>
                         </div>
                     </div>
-                    <div class="card" onclick="showMemberDetails('mike-rodriguez')">
+                    
+                    <div class="card" onclick="showMemberDetails('rahul-melkani')">
                         <div class="card-header">
                             <div class="card-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c); color: white; font-size: 1.2rem; font-weight: bold;">
-                                MR
+                                RM
                             </div>
                             <div>
-                                <h3 class="card-title">Mike Rodriguez</h3>
-                                <p style="color: #00ff88; font-size: 0.9rem;">Technical Secretary</p>
+                                <h3 class="card-title">Rahul Melkani</h3>
+                                <p style="color: #00ff88; font-size: 0.9rem;">Third Year</p>
                             </div>
                         </div>
                         <p class="card-description">
-                            Electrical Engineering student specializing in PCB design and electronics prototyping. Expert in circuit analysis and hardware optimization.
+                            ECE student specializing in circuit design and hardware prototyping.
                         </p>
                         <div class="card-meta">
                             <span><i class="fas fa-circuit-board"></i> PCB Design</span>
                             <span><i class="fas fa-tools"></i> Prototyping</span>
                         </div>
                     </div>
-                    <div class="card" onclick="showMemberDetails('priya-patel')">
+                    
+                    <div class="card" onclick="showMemberDetails('vaibhav-pandey')">
                         <div class="card-header">
                             <div class="card-icon" style="background: linear-gradient(135deg, #ffecd2, #fcb69f); color: #333; font-size: 1.2rem; font-weight: bold;">
-                                PP
+                                VP
                             </div>
                             <div>
-                                <h3 class="card-title">Priya Patel</h3>
-                                <p style="color: #00ff88; font-size: 0.9rem;">Event Coordinator</p>
+                                <h3 class="card-title">Vaibhav Pandey</h3>
+                                <p style="color: #00ff88; font-size: 0.9rem;">Third Year</p>
                             </div>
                         </div>
                         <p class="card-description">
-                            Renewable Energy Engineering student coordinating workshops and events. Specializes in power electronics and sustainable systems.
+                            ECE student with focus on event coordination and project management.
                         </p>
                         <div class="card-meta">
-                            <span><i class="fas fa-solar-panel"></i> Green Energy</span>
                             <span><i class="fas fa-calendar-alt"></i> Event Planning</span>
+                            <span><i class="fas fa-project-diagram"></i> Project Management</span>
                         </div>
                     </div>
-                    <div class="card" onclick="showMemberDetails('david-kim')">
+                    
+                    <div class="card" onclick="showMemberDetails('yash-joshi')">
                         <div class="card-header">
                             <div class="card-icon" style="background: linear-gradient(135deg, #a8edea, #fed6e3); color: #333; font-size: 1.2rem; font-weight: bold;">
-                                DK
+                                YJ
                             </div>
                             <div>
-                                <h3 class="card-title">David Kim</h3>
-                                <p style="color: #00ff88; font-size: 0.9rem;">Treasurer</p>
+                                <h3 class="card-title">Yash Joshi</h3>
+                                <p style="color: #00ff88; font-size: 0.9rem;">Second Year</p>
                             </div>
                         </div>
                         <p class="card-description">
-                            Communications Engineering student managing finances and researching signal processing and communication systems.
+                            Lead at sophomore level with strong foundation in mathematics and hardware.
                         </p>
                         <div class="card-meta">
-                            <span><i class="fas fa-signal"></i> Signal Processing</span>
-                            <span><i class="fas fa-chart-line"></i> Finance</span>
+                            <span><i class="fas fa-calculator"></i> Mathematics</span>
+                            <span><i class="fas fa-microchip"></i> Hardware</span>
                         </div>
                     </div>
-                    <div class="card" onclick="showMemberDetails('emma-wilson')">
+                    
+                    <div class="card" onclick="showMemberDetails('vijay-saini')">
                         <div class="card-header">
                             <div class="card-icon" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; font-size: 1.2rem; font-weight: bold;">
-                                EW
+                                VS
                             </div>
                             <div>
-                                <h3 class="card-title">Emma Wilson</h3>
-                                <p style="color: #00ff88; font-size: 0.9rem;">Web Developer</p>
+                                <h3 class="card-title">Vijay Saini</h3>
+                                <p style="color: #00ff88; font-size: 0.9rem;">ESP32 Specialist</p>
                             </div>
                         </div>
                         <p class="card-description">
-                            Computer Engineering student developing digital platforms. Expert in full-stack development and IoT web interfaces.
+                            Hardware specialist with expertise in ESP32 microcontroller systems.
                         </p>
                         <div class="card-meta">
-                            <span><i class="fas fa-code"></i> Full-Stack Dev</span>
-                            <span><i class="fas fa-globe"></i> Web Platforms</span>
+                            <span><i class="fas fa-microchip"></i> Microcontroller</span>
+                            <span><i class="fas fa-wifi"></i> ESP32</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card" onclick="showMemberDetails('nandini-gupta')">
+                        <div class="card-header">
+                            <div class="card-icon" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; font-size: 1.2rem; font-weight: bold;">
+                                NG
+                            </div>
+                            <div>
+                                <h3 class="card-title">Nandini Gupta</h3>
+                                <p style="color: #00ff88; font-size: 0.9rem;">Microcontroller Specialist</p>
+                            </div>
+                        </div>
+                        <p class="card-description">
+                            Hardware expert specializing in Arduino-based systems and programming.
+                        </p>
+                        <div class="card-meta">
+                            <span><i class="fas fa-microchip"></i> Microcontroller</span>
+                            <span><i class="fas fa-code"></i> Arduino</span>
+                        </div>
+                    </div>
+
+                    <div class="card" onclick="showMemberDetails('nishtha-kanojia')">
+                        <div class="card-header">
+                            <div class="card-icon" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; font-size: 1.2rem; font-weight: bold;">
+                                NK
+                            </div>
+                            <div>
+                                <h3 class="card-title">Nishtha Kanojia</h3>
+                                <p style="color: #00ff88; font-size: 0.9rem;">Components Specialist</p>
+                            </div>
+                        </div>
+                        <p class="card-description">
+                            Hardware expert with deep knowledge of electronic components and microprocessor systems.
+                        </p>
+                        <div class="card-meta">
+                            <span><i class="fas fa-microchip"></i> Components</span>
+                            <span><i class="fas fa-cpu"></i> Microprocessor</span>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Join Us Section -->
         <section id="join" class="page-section">
             <div class="section">
                 <div class="section-header">
@@ -1038,7 +1166,6 @@
             </div>
         </section>
 
-        <!-- Contact Section -->
         <section id="contact" class="page-section">
             <div class="section">
                 <div class="section-header">
@@ -1074,7 +1201,6 @@
         </section>
     </div>
 
-    <!-- Status Message -->
     <div id="statusMessage" class="status-message"></div>
 
     <script>
@@ -1083,14 +1209,18 @@
         let isAnimating = false;
         let animationCache = new Map();
 
-        // Initialize EmailJS
+        // Initialize EmailJS with error handling
         (function() {
-            emailjs.init('tJ7sgNwAKS-bclcMJ');
+            try {
+                emailjs.init('6MJWldRYtUSXTGkRE');
+                console.log('EmailJS initialized successfully');
+            } catch (error) {
+                console.error('Failed to initialize EmailJS:', error);
+            }
         })();
 
         // Initialize page with performance optimizations
         document.addEventListener('DOMContentLoaded', function() {
-            // Optimize animations for performance
             requestAnimationFrame(() => {
                 hideLoader();
                 initializeHeroAnimations();
@@ -1118,7 +1248,6 @@
 
         // Performance-optimized hero animations
         function initializeHeroAnimations() {
-            // Use a single timeline for better performance
             const heroTimeline = anime.timeline({
                 easing: 'easeOutExpo'
             });
@@ -1157,13 +1286,12 @@
             const canvas = document.getElementById('electronicsCanvas');
             if (!canvas) return;
 
-            // Create fewer elements for better performance
             createLimitedCircuitLines(canvas);
             createLimitedComponents(canvas);
         }
 
         function createLimitedCircuitLines(canvas) {
-            const numLines = 8; // Reduced from 15
+            const numLines = 8;
             for (let i = 0; i < numLines; i++) {
                 const line = document.createElement('div');
                 line.className = 'circuit-line';
@@ -1186,7 +1314,6 @@
                 
                 canvas.appendChild(line);
                 
-                // Simplified animation
                 anime({
                     targets: line,
                     opacity: [0, 0.4, 0],
@@ -1200,7 +1327,7 @@
 
         function createLimitedComponents(canvas) {
             const components = [
-                { type: 'resistor', count: 6 }, // Reduced counts
+                { type: 'resistor', count: 6 },
                 { type: 'capacitor', count: 4 },
                 { type: 'ic', count: 3 },
                 { type: 'led', count: 8 }
@@ -1216,7 +1343,6 @@
                     
                     canvas.appendChild(element);
                     
-                    // Simpler animation
                     anime({
                         targets: element,
                         opacity: [0, 0.3],
@@ -1232,6 +1358,10 @@
         // Optimized navigation with smooth transitions
         function navigateToSection(sectionId) {
             if (isAnimating || currentSection === sectionId) return;
+            
+            // Close mobile menu if open
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.remove('active');
             
             isAnimating = true;
             const currentEl = document.getElementById(currentSection);
@@ -1255,7 +1385,6 @@
                 currentSection = sectionId;
                 isAnimating = false;
                 
-                // Animate content if not cached
                 if (!animationCache.has(sectionId)) {
                     animateSectionContent(targetEl);
                     animationCache.set(sectionId, true);
@@ -1266,8 +1395,6 @@
         // Simplified section content animations
         function animateSectionContent(section) {
             const cards = section.querySelectorAll('.card');
-            const titles = section.querySelectorAll('.section-title');
-            const subtitles = section.querySelectorAll('.section-subtitle');
             
             if (cards.length > 0) {
                 cards.forEach((card, index) => {
@@ -1304,7 +1431,21 @@
                 });
             });
 
-            // Fixed form submissions
+            // Mobile menu toggle
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const navLinks = document.getElementById('navLinks');
+            
+            mobileMenuBtn.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+                const icon = mobileMenuBtn.querySelector('i');
+                if (navLinks.classList.contains('active')) {
+                    icon.className = 'fas fa-times';
+                } else {
+                    icon.className = 'fas fa-bars';
+                }
+            });
+
+            // Form submissions
             document.getElementById('joinForm').addEventListener('submit', handleJoinForm);
             document.getElementById('contactForm').addEventListener('submit', handleContactForm);
 
@@ -1323,8 +1464,8 @@
             });
         }
 
-        // Fixed form handlers
-        function handleJoinForm(e) {
+        // Enhanced form handlers with better error handling
+        async function handleJoinForm(e) {
             e.preventDefault();
             const form = e.target;
             const formData = new FormData(form);
@@ -1335,22 +1476,64 @@
                 showStatusMessage('Please fill in all required fields.', 'error');
                 return;
             }
-            
-            // Simple animation
+
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(data.email)) {
+                showStatusMessage('Please enter a valid email address.', 'error');
+                return;
+            }
+
             const submitBtn = form.querySelector('.submit-btn');
-            submitBtn.style.transform = 'scale(0.98)';
-            setTimeout(() => {
-                submitBtn.style.transform = 'scale(1)';
-            }, 150);
+            const originalText = submitBtn.innerHTML;
             
-            // Simulate successful submission
-            setTimeout(() => {
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="loading-spinner"></div> Submitting...';
+
+            try {
+                // Check if EmailJS is available
+                if (typeof emailjs === 'undefined') {
+                    throw new Error('EmailJS not loaded');
+                }
+
+                const templateParams = {
+                    from_name: data.name,
+                    from_email: data.email,
+                    phone: data.phone,
+                    year: data.year,
+                    interest: data.interest,
+                    experience: data.experience || 'Not specified',
+                    motivation: data.motivation
+                };
+
+                console.log('Sending join form with params:', templateParams);
+
+                // Send email using EmailJS
+                const response = await emailjs.send('service_cutut4r', 'template_a0se4yf', templateParams);
+                
+                console.log('EmailJS response:', response);
                 showStatusMessage('Application submitted successfully! We\'ll contact you soon.', 'success');
                 form.reset();
-            }, 500);
+
+            } catch (error) {
+                console.error('Join form submission error:', error);
+                
+                // More specific error messages
+                if (error.text) {
+                    showStatusMessage(`Submission failed: ${error.text}`, 'error');
+                } else if (error.message) {
+                    showStatusMessage(`Error: ${error.message}`, 'error');
+                } else {
+                    showStatusMessage('Failed to submit application. Please try again or contact us directly.', 'error');
+                }
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
         }
 
-        function handleContactForm(e) {
+        async function handleContactForm(e) {
             e.preventDefault();
             const form = e.target;
             const formData = new FormData(form);
@@ -1361,30 +1544,58 @@
                 showStatusMessage('Please fill in all required fields.', 'error');
                 return;
             }
-            
-            // Simple animation
+
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(data.email)) {
+                showStatusMessage('Please enter a valid email address.', 'error');
+                return;
+            }
+
             const submitBtn = form.querySelector('.submit-btn');
-            submitBtn.style.transform = 'scale(0.98)';
-            submitBtn.disabled = true;
+            const originalText = submitBtn.innerHTML;
             
-            // Send email using EmailJS
-            emailjs.send('service_61cnx0l', 'template_4ehu3ta', {
-                from_name: data.name,
-                from_email: data.email,
-                subject: data.subject,
-                message: data.message
-            }, 'tJ7sgNwAKS-bclcMJ')
-            .then(function() {
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="loading-spinner"></div> Sending...';
+
+            try {
+                // Check if EmailJS is available
+                if (typeof emailjs === 'undefined') {
+                    throw new Error('EmailJS not loaded');
+                }
+
+                const templateParams = {
+                    from_name: data.name,
+                    from_email: data.email,
+                    subject: data.subject,
+                    message: data.message
+                };
+
+                console.log('Sending contact form with params:', templateParams);
+
+                // Send email using EmailJS
+                const response = await emailjs.send('service_cutut4r', 'template_62v4y7c', templateParams);
+                
+                console.log('EmailJS response:', response);
                 showStatusMessage('Message sent successfully! We\'ll get back to you soon.', 'success');
                 form.reset();
-            }, function(error) {
-                showStatusMessage('Failed to send message. Please try again.', 'error');
-                console.error('EmailJS error:', error);
-            })
-            .finally(function() {
-                submitBtn.style.transform = 'scale(1)';
+
+            } catch (error) {
+                console.error('Contact form submission error:', error);
+                
+                // More specific error messages
+                if (error.text) {
+                    showStatusMessage(`Send failed: ${error.text}`, 'error');
+                } else if (error.message) {
+                    showStatusMessage(`Error: ${error.message}`, 'error');
+                } else {
+                    showStatusMessage('Failed to send message. Please try again or contact us directly.', 'error');
+                }
+            } finally {
                 submitBtn.disabled = false;
-            });
+                submitBtn.innerHTML = originalText;
+            }
         }
 
         // Optimized status message
@@ -1395,12 +1606,13 @@
             
             setTimeout(() => {
                 statusEl.classList.remove('show');
-            }, 4000);
+            }, 5000);
         }
 
         // Project/Member detail functions
         function showProjectDetails(projectId) {
             const projects = {
+                'digital-clock': 'Digital Clock - Arduino project with real-time weather data and RTC module.',
                 'iot-home': 'IoT Smart Home System - Advanced automation with AI learning algorithms',
                 'robotics-arm': '6-DOF Robotic Arm - Industrial precision with computer vision',
                 'drone-system': 'Autonomous Drone System - UAV with obstacle avoidance',
@@ -1414,12 +1626,14 @@
 
         function showMemberDetails(memberId) {
             const members = {
-                'alex-chen': 'Alex Chen - President specializing in embedded systems and IoT development',
-                'sarah-johnson': 'Sarah Johnson - Vice President expert in robotics and computer vision',
-                'mike-rodriguez': 'Mike Rodriguez - Technical Secretary focusing on PCB design and prototyping',
-                'priya-patel': 'Priya Patel - Event Coordinator specializing in renewable energy systems',
-                'david-kim': 'David Kim - Treasurer expert in signal processing and communications',
-                'emma-wilson': 'Emma Wilson - Web Developer specializing in full-stack development'
+                'jai-kumar': 'Jai Kumar - Mentor specializing in embedded systems with 4 years experience',
+                'abishek-pokhriyal': 'Abishek Pokhriyal - Project Lead expert in robotics and computer vision',
+                'rahul-melkani': 'Rahul Melkani - ECE student focusing on PCB design and prototyping',
+                'vaibhav-pandey': 'Vaibhav Pandey - ECE student specializing in event planning and project management',
+                'yash-joshi': 'Yash Joshi - Second year lead with strong foundation in mathematics and hardware',
+                'vijay-saini': 'Vijay Saini - Hardware specialist expert in ESP32 microcontroller systems',
+                'nandini-gupta': 'Nandini Gupta - Hardware expert specializing in Arduino-based systems',
+                'nishtha-kanojia': 'Nishtha Kanojia - Components specialist with expertise in microprocessor systems'
             };
             
             if (members[memberId]) {
@@ -1441,9 +1655,9 @@
 
         function showMemberCategory(category) {
             const categories = {
-                'leadership': 'Leadership Team - Executive leadership and core organizers',
-                'technical': 'Technical Team - Project leads and technical specialists',
-                'alumni': 'Alumni Network - Distinguished graduates and their achievements'
+                'leadership': 'Leadership Team - Executive members and mentors',
+                'technical': 'Technical Team - Project leads and hardware specialists',
+                'alumni': 'Alumni Network - Former members in industry and academia'
             };
             
             if (categories[category]) {
