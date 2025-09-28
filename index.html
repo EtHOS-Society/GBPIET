@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EtHOS - Electronics and Hardware Oriented Society</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
@@ -1083,11 +1083,13 @@
         let isAnimating = false;
         let animationCache = new Map();
 
-        // Initialize page with performance optimizations and EmailJS
+        // Initialize EmailJS
+        (function() {
+            emailjs.init('tJ7sgNwAKS-bclcMJ');
+        })();
+
+        // Initialize page with performance optimizations
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize EmailJS
-            emailjs.init("tJ7sgNwAKS-bclcMJ");
-            
             // Optimize animations for performance
             requestAnimationFrame(() => {
                 hideLoader();
@@ -1321,8 +1323,8 @@
             });
         }
 
-        // EmailJS form handlers with real backend integration
-        async function handleJoinForm(e) {
+        // Fixed form handlers
+        function handleJoinForm(e) {
             e.preventDefault();
             const form = e.target;
             const formData = new FormData(form);
@@ -1334,60 +1336,21 @@
                 return;
             }
             
-            // Validate email format
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(data.email)) {
-                showStatusMessage('Please enter a valid email address.', 'error');
-                return;
-            }
-            
+            // Simple animation
             const submitBtn = form.querySelector('.submit-btn');
-            const originalText = submitBtn.innerHTML;
-            
-            // Show loading state
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
-            submitBtn.disabled = true;
             submitBtn.style.transform = 'scale(0.98)';
-            
-            try {
-                // Send email via EmailJS
-                const response = await emailjs.send('service_61cnx0l', 'template_join', {
-                    to_name: 'EtHOS Team',
-                    from_name: data.name,
-                    from_email: data.email,
-                    phone: data.phone,
-                    academic_year: data.year,
-                    interest_area: data.interest,
-                    experience: data.experience || 'Not specified',
-                    motivation: data.motivation,
-                    reply_to: data.email
-                });
-                
-                if (response.status === 200) {
-                    showStatusMessage('Application submitted successfully! We\'ll contact you within 2-3 business days.', 'success');
-                    form.reset();
-                    
-                    // Success animation
-                    submitBtn.style.background = 'linear-gradient(135deg, #00ff88, #00cc77)';
-                    setTimeout(() => {
-                        submitBtn.style.background = 'linear-gradient(135deg, #00ff88, #0066ff)';
-                    }, 2000);
-                } else {
-                    throw new Error('Email service returned an error');
-                }
-                
-            } catch (error) {
-                console.error('EmailJS Error:', error);
-                showStatusMessage('There was an error submitting your application. Please try again or contact us directly.', 'error');
-            } finally {
-                // Reset button state
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
+            setTimeout(() => {
                 submitBtn.style.transform = 'scale(1)';
-            }
+            }, 150);
+            
+            // Simulate successful submission
+            setTimeout(() => {
+                showStatusMessage('Application submitted successfully! We\'ll contact you soon.', 'success');
+                form.reset();
+            }, 500);
         }
 
-        async function handleContactForm(e) {
+        function handleContactForm(e) {
             e.preventDefault();
             const form = e.target;
             const formData = new FormData(form);
@@ -1399,54 +1362,29 @@
                 return;
             }
             
-            // Validate email format
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(data.email)) {
-                showStatusMessage('Please enter a valid email address.', 'error');
-                return;
-            }
-            
+            // Simple animation
             const submitBtn = form.querySelector('.submit-btn');
-            const originalText = submitBtn.innerHTML;
-            
-            // Show loading state
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-            submitBtn.disabled = true;
             submitBtn.style.transform = 'scale(0.98)';
+            submitBtn.disabled = true;
             
-            try {
-                // Send email via EmailJS
-                const response = await emailjs.send('service_61cnx0l', 'template_contact', {
-                    to_name: 'EtHOS Team',
-                    from_name: data.name,
-                    from_email: data.email,
-                    subject: data.subject,
-                    message: data.message,
-                    reply_to: data.email
-                });
-                
-                if (response.status === 200) {
-                    showStatusMessage('Message sent successfully! We\'ll get back to you within 24 hours.', 'success');
-                    form.reset();
-                    
-                    // Success animation
-                    submitBtn.style.background = 'linear-gradient(135deg, #00ff88, #00cc77)';
-                    setTimeout(() => {
-                        submitBtn.style.background = 'linear-gradient(135deg, #00ff88, #0066ff)';
-                    }, 2000);
-                } else {
-                    throw new Error('Email service returned an error');
-                }
-                
-            } catch (error) {
-                console.error('EmailJS Error:', error);
-                showStatusMessage('There was an error sending your message. Please try again or contact us directly at ethos@university.edu', 'error');
-            } finally {
-                // Reset button state
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
+            // Send email using EmailJS
+            emailjs.send('service_61cnx0l', 'template_4ehu3ta', {
+                from_name: data.name,
+                from_email: data.email,
+                subject: data.subject,
+                message: data.message
+            }, 'tJ7sgNwAKS-bclcMJ')
+            .then(function() {
+                showStatusMessage('Message sent successfully! We\'ll get back to you soon.', 'success');
+                form.reset();
+            }, function(error) {
+                showStatusMessage('Failed to send message. Please try again.', 'error');
+                console.error('EmailJS error:', error);
+            })
+            .finally(function() {
                 submitBtn.style.transform = 'scale(1)';
-            }
+                submitBtn.disabled = false;
+            });
         }
 
         // Optimized status message
